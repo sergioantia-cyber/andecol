@@ -1,0 +1,252 @@
+.order-builder-page {
+  padding-bottom: 80px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.order-meta-chips {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.meta-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.meta-chip.active {
+  background: var(--primary-50);
+  color: var(--primary);
+  border-color: var(--primary-200);
+  font-weight: 600;
+}
+
+.order-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1.5rem;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
+}
+
+.card-header h3 {
+  flex: 1;
+  font-size: 1.1rem;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.client-selector-card, .items-card, .summary-card, .notes-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.5rem;
+}
+
+.client-search {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.client-search .search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+}
+
+.client-search input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-main);
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.client-search input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.1);
+  background: white;
+}
+
+.client-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.client-details .detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.client-details .label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.client-details .value {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.add-item-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px dashed var(--primary);
+  color: var(--primary);
+  background: transparent;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-item-btn:hover {
+  background: var(--primary-50);
+}
+
+.items-table-wrapper {
+  overflow-x: auto;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.items-table th {
+  text-align: left;
+  padding: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.items-table td {
+  padding: 1rem 0.75rem;
+  border-bottom: 1px solid var(--bg-main);
+  font-size: 0.95rem;
+}
+
+.item-name-cell {
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.qty-input {
+  width: 60px;
+  padding: 0.4rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.delete-item-btn {
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.delete-item-btn:hover {
+  color: #ef4444;
+  background: #fef2f2;
+}
+
+.summary-rows {
+  margin-top: 1rem;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.summary-row.total {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--text-main);
+  padding-top: 1rem;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 1rem 0;
+}
+
+.full-width {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.notes-card textarea {
+  width: 100%;
+  height: 100px;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-main);
+  resize: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.notes-card textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: white;
+}
+
+@media (max-width: 1024px) {
+  .order-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .order-summary-sidebar {
+    position: sticky;
+    bottom: 80px;
+    z-index: 10;
+  }
+}

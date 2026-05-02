@@ -1,0 +1,138 @@
+/* ---- Sidebar wrapper ---- */
+.sidebar {
+  width: 260px;
+  height: 100vh;
+  background-color: var(--white);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s ease,
+              visibility 0.3s ease;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  overflow: hidden;
+}
+
+/* Collapsed: panel completely hidden, zero width */
+.sidebar.collapsed {
+  width: 0;
+  opacity: 0;
+  visibility: hidden;
+  border-right: none;
+}
+
+/* ---- Floating toggle button (always visible) ---- */
+.toggle-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 300;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  transition: all 0.2s ease;
+}
+
+.toggle-btn:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+}
+
+/* When sidebar is open, move button to the right edge of the panel */
+.sidebar:not(.collapsed) .toggle-btn {
+  position: static;
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+  border: none;
+  background: var(--bg-main);
+  width: 32px;
+  height: 32px;
+}
+
+/* ---- Header ---- */
+.sidebar-header {
+  padding: 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+}
+
+/* ---- Nav items ---- */
+.sidebar-nav {
+  flex: 1;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  cursor: pointer;
+  gap: 14px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.nav-item:hover {
+  background-color: var(--bg-main);
+  color: var(--primary);
+}
+
+.nav-item.active {
+  background-color: var(--primary);
+  color: var(--white);
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+}
+
+.nav-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ---- Footer ---- */
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.logout:hover {
+  color: var(--danger);
+  background-color: #fee2e2;
+}
