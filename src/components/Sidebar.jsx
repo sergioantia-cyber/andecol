@@ -32,7 +32,12 @@ const Sidebar = ({ activeTab, onTabChange }) => {
   ];
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      window.location.reload(); // Force app reload to clear state and show login
+    } catch (e) {
+      console.error('Error logging out', e);
+    }
   };
 
   const handleNavClick = (id) => {

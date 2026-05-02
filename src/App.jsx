@@ -56,13 +56,19 @@ function App() {
   const PULL_THRESHOLD = 70;
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-    return () => subscription.unsubscribe();
+    // Verificar la sesión consultando el endpoint que lee la cookie HttpOnly
+    const checkSession = async () => {
+      try {
+        const res = await fetch('/api/auth/user');
+        const data = await res.json();
+        setSession(data.user ? { user: data.user } : null);
+      } catch (err) {
+        console.error('Error fetching session', err);
+        setSession(null);
+      }
+    };
+    
+    checkSession();
   }, []);
 
   const sheetId = localStorage.getItem('andecol_sheet_id') || '1VpPu3RV4owV8GeFeultha-93ldNrSJEq';

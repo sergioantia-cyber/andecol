@@ -14,8 +14,11 @@ import {
   Edit3,
   Link,
   ExternalLink,
-  X
+  X,
+  Database,
+  CloudUpload
 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import './Inventory.css';
 
 const Inventory = ({ onUpdate, initialCategory = 'Todas las categorías', initialTab = 'nuevos' }) => {
@@ -26,11 +29,9 @@ const Inventory = ({ onUpdate, initialCategory = 'Todas las categorías', initia
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
-  // Perfiles completados guardados en caché del navegador
-  const [completedProfiles, setCompletedProfiles] = useState(() => {
-    const saved = localStorage.getItem('andecol_completed_profiles');
-    return saved ? JSON.parse(saved) : {};
-  });
+  // Perfiles completados sincronizados con Supabase
+  const [completedProfiles, setCompletedProfiles] = useState({});
+  const [dbLoading, setDbLoading] = useState(false);
   const [activeTab, setActiveTab] = useState(initialTab);
 
   // Estados para el Modal de Completar/Editar Ficha
@@ -46,7 +47,11 @@ const Inventory = ({ onUpdate, initialCategory = 'Todas las categorías', initia
 
   // La URL de exportación de tu Google Sheet
   const [sheetId, setSheetId] = useState(() => localStorage.getItem('andecol_sheet_id') || '1VpPu3RV4owV8GeFeultha-93ldNrSJEq');
-  const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
+  const isDev = import.meta.env.DEV;
+  // Usar el proxy seguro en producción (Vercel) para evitar SSRF, o el enlace directo en desarrollo local
+  const sheetUrl = isDev 
+    ? `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv` 
+    : `/api/sheets/inventory?sheetId=${sheetId}`;
   const sheetViewUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/edit`;
 
   // Estado del modal de configuración del link
@@ -103,10 +108,85 @@ const Inventory = ({ onUpdate, initialCategory = 'Todas las categorías', initia
   // Cargar datos al iniciar
   useEffect(() => {
     fetchInventoryFromSheets();
+    fetchProfilesFromSupabase();
   }, []);
 
-  const markAsCompleted = (sku, customData = {}) => {
+  const fetchProfilesFromSupabase = async () => {
+    setDbLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('product_profiles')
+        .select('*');
+      
+      if (error) throw error;
+
+      if (data) {
+        const profilesMap = {};
+        data.forEach(profile => {
+          profilesMap[profile.sku] = {
+            ...profile,
+            completed: true
+          };
+        });
+        setCompletedProfiles(profilesMap);
+      }
+    } catch (err) {
+      console.error('Error al cargar perfiles de Supabase:', err);
+      // Fallback a localStorage si falla (opcional)
+      const saved = localStorage.getItem('andecol_completed_profiles');
+      if (saved) setCompletedProfiles(JSON.parse(saved));
+    } finally {
+      setDbLoading(false);
+    }
+  };
+
+  const syncLocalToSupabase = async () => {
+    const saved = localStorage.getItem('andecol_completed_profiles');
+    if (!saved) {
+      alert('No se encontraron datos locales para sincronizar.');
+      return;
+    }
+
+    const localData = JSON.parse(saved);
+    const skus = Object.keys(localData);
+    
+    if (skus.length === 0) return;
+
+    setLoading(true);
+    let successCount = 0;
+
+    for (const sku of skus) {
+      const profile = localData[sku];
+      try {
+        const { error } = await supabase
+          .from('product_profiles')
+          .upsert({
+            sku: sku,
+            name: profile.name,
+            photo: profile.photo,
+            description: profile.description,
+            max_stock: parseFloat(profile.maxStock) || 0,
+            current_stock: parseFloat(profile.currentStock) || 0,
+            low_stock_alert: parseFloat(profile.lowStockAlert) || 10,
+            completed: true,
+            updated_at: new Date().toISOString()
+          });
+        
+        if (!error) successCount++;
+      } catch (err) {
+        console.error(`Error sincronizando SKU ${sku}:`, err);
+      }
+    }
+
+    alert(`Sincronización completada: ${successCount} productos subidos a Supabase.`);
+    fetchProfilesFromSupabase();
+    setLoading(false);
+  };
+
+  const markAsCompleted = async (sku, customData = {}) => {
     const trimmedSku = sku.trim();
+    
+    // Optimistic UI update
     const updated = {
       ...completedProfiles,
       [trimmedSku]: {
@@ -115,7 +195,32 @@ const Inventory = ({ onUpdate, initialCategory = 'Todas las categorías', initia
       }
     };
     setCompletedProfiles(updated);
-    localStorage.setItem('andecol_completed_profiles', JSON.stringify(updated));
+    
+    try {
+      const { error } = await supabase
+        .from('product_profiles')
+        .upsert({
+          sku: trimmedSku,
+          name: customData.name,
+          photo: customData.photo,
+          description: customData.description,
+          max_stock: parseFloat(customData.maxStock) || 0,
+          current_stock: parseFloat(customData.currentStock) || 0,
+          low_stock_alert: parseFloat(customData.lowStockAlert) || 10,
+          completed: true,
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+      
+      // También guardar en localStorage como respaldo local rápido
+      localStorage.setItem('andecol_completed_profiles', JSON.stringify(updated));
+    } catch (err) {
+      console.error('Error al guardar en Supabase:', err);
+      alert('Error al sincronizar con la nube, pero se guardó localmente.');
+      localStorage.setItem('andecol_completed_profiles', JSON.stringify(updated));
+    }
+
     setIsModalOpen(false);
     if (onUpdate) onUpdate(); // Actualizar dashboard con el nuevo conteo
   };
@@ -169,6 +274,9 @@ const Inventory = ({ onUpdate, initialCategory = 'Todas las categorías', initia
         <p className="subtitle">Conectado en vivo con Google Sheets.</p>
         
         <div className="global-actions">
+          <button className="action-btn outline" onClick={syncLocalToSupabase} title="Sincronizar datos locales con la nube">
+            <CloudUpload size={18} /> Migrar Datos Locales
+          </button>
           <button className="action-btn outline" onClick={() => { setTempSheetInput(sheetViewUrl); setIsSheetModalOpen(true); }}>
             <Link size={18} /> Configurar Excel
           </button>
@@ -231,7 +339,7 @@ const Inventory = ({ onUpdate, initialCategory = 'Todas las categorías', initia
       </div>
 
       <div className="inventory-grid-container">
-        {loading ? (
+        {(loading || dbLoading) ? (
           <div className="loading-state">
             <RefreshCw size={32} className="spinning" />
             <p>Sincronizando catálogo desde la nube...</p>

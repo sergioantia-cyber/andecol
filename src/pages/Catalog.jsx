@@ -1,23 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 import { Search, Filter, FileText, Package, AlertCircle, XCircle, RefreshCw, X, ShoppingCart, Share2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import './Catalog.css';
 
 const Catalog = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [products, setProducts] = useState([]);
+  const [rawProducts, setRawProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // Perfiles completados guardados en local storage
-  const [completedProfiles, setCompletedProfiles] = useState(() => {
-    const saved = localStorage.getItem('andecol_completed_profiles');
-    return saved ? JSON.parse(saved) : {};
-  });
+  // Perfiles completados sincronizados con Supabase
+  const [completedProfiles, setCompletedProfiles] = useState({});
+  const [dbLoading, setDbLoading] = useState(false);
 
   const sheetId = '1VpPu3RV4owV8GeFeultha-93ldNrSJEq';
-  const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
+  const isDev = import.meta.env.DEV;
+  // Usar el proxy seguro en producción (Vercel) para evitar SSRF, o el enlace directo en desarrollo local
+  const sheetUrl = isDev 
+    ? `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv` 
+    : `/api/sheets/inventory?sheetId=${sheetId}`;
 
   const fetchProducts = () => {
     setLoading(true);
@@ -37,9 +40,7 @@ const Catalog = () => {
               status: row['Estado Stock'] || 'Desconocido'
             }));
           
-          // Solo mostrar en catálogo los que tienen perfil completado
-          const catalogItems = items.filter(item => completedProfiles[item.sku.trim()]?.completed);
-          setProducts(catalogItems);
+          setRawProducts(items);
         }
         setLoading(false);
       },
@@ -52,13 +53,46 @@ const Catalog = () => {
 
   useEffect(() => {
     fetchProducts();
+    fetchProfilesFromSupabase();
   }, []);
+
+  const fetchProfilesFromSupabase = async () => {
+    setDbLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('product_profiles')
+        .select('*');
+      
+      if (error) throw error;
+
+      if (data) {
+        const profilesMap = {};
+        data.forEach(profile => {
+          profilesMap[profile.sku] = {
+            ...profile,
+            completed: true
+          };
+        });
+        setCompletedProfiles(profilesMap);
+      }
+    } catch (err) {
+      console.error('Error al cargar perfiles de Supabase:', err);
+      // Fallback a localStorage
+      const saved = localStorage.getItem('andecol_completed_profiles');
+      if (saved) setCompletedProfiles(JSON.parse(saved));
+    } finally {
+      setDbLoading(false);
+    }
+  };
 
   const getStatusBadge = (status) => {
     if (status.includes('Existencia')) return <span className="badge success-badge"><Package size={12} /> En Stock</span>;
     if (status.includes('Bajo')) return <span className="badge warning-badge"><AlertCircle size={12} /> Bajo Stock</span>;
     return <span className="badge danger-badge"><XCircle size={12} /> Sin Stock</span>;
   };
+
+  // Filtrar primero por completados y luego por búsqueda
+  const products = rawProducts.filter(item => completedProfiles[item.sku.trim()]?.completed);
 
   const filteredProducts = products.filter(p => {
     const profile = completedProfiles[p.sku.trim()] || {};
@@ -97,7 +131,7 @@ const Catalog = () => {
         </div>
       </div>
 
-      {loading ? (
+      {(loading || dbLoading) ? (
         <div className="loading-state-catalog">
           <RefreshCw size={40} className="spinning" />
           <p>Cargando catálogo dinámico...</p>

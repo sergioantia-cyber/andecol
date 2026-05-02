@@ -1,0 +1,40 @@
+name: DevSecOps Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    # Ejecutar semanalmente
+    - cron: '0 0 * * 0'
+
+jobs:
+  security-scans:
+    name: Security Audits
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Necesario para Gitleaks
+
+      - name: Gitleaks Scan (Secret Detection)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Semgrep Scan (Static Analysis)
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: "p/javascript"
+          
+      - name: Trivy Scan (Dependency Vulnerabilities)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          format: 'table'
+          exit-code: '1' # Falla si hay vulnerabilidades CRÍTICAS
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'

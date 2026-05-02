@@ -10,8 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.105.1",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.37.0",
     "chart.js": "^4.5.1",
+    "cookie": "^1.1.1",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.14.0",
     "papaparse": "^5.5.3",
