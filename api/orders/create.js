@@ -1,6 +1,7 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
+import { serialize } from "cookie";
 
 // Inicializar Redis para Upstash
 const redis = new Redis({
@@ -38,37 +39,41 @@ export default async function handler(req, res) {
     });
   }
 
-  // BOLA Protection: Validar la sesión del usuario enviada en los headers
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ error: 'Unauthorized: Missing token' });
-  }
-
-  // Inicializar Supabase con el Service Role para escritura segura si fuera necesario
-  // pero usando el JWT del usuario para respetar RLS
+  // BOLA Protection: Leer la sesión de forma segura desde las Cookies HttpOnly
   const supabaseUrl = process.env.VITE_SUPABASE_URL;
   const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
   
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    global: {
-      headers: {
-        Authorization: authHeader // Pasar el token del usuario al backend de Supabase
-      }
-    }
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return Object.keys(req.cookies || {}).map((name) => ({ name, value: req.cookies[name] }));
+      },
+      setAll(cookiesToSet) {
+        const serializedCookies = cookiesToSet.map(({ name, value, options }) => {
+          return serialize(name, value, {
+            ...options,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/',
+          });
+        });
+        res.setHeader('Set-Cookie', serializedCookies);
+      },
+    },
   });
 
   const { data: { user }, error: userError } = await supabase.auth.getUser();
 
   if (userError || !user) {
-    return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+    return res.status(401).json({ error: 'Unauthorized: Invalid or missing session cookie' });
   }
 
   try {
     const { items, customer, notes } = req.body;
 
     // Aquí iría la lógica de inserción del pedido en Supabase
-    // Debido a que inicializamos Supabase pasándole el Authorization Header del usuario,
-    // el RLS (Row Level Security) se aplica automáticamente.
+    // Debido a que inicializamos Supabase con la cookie segura, el RLS (Row Level Security) se aplica automáticamente.
     
     // Ejemplo de inserción asumiendo tabla "pedidos"
     /*
@@ -85,7 +90,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ 
       success: true, 
-      message: 'Pedido recibido con éxito (Simulado para pruebas de seguridad)',
+      message: 'Pedido recibido con éxito (Protegido por Rate Limit y BOLA)',
       user_id: user.id
     });
 

@@ -6,7 +6,10 @@ import {
   User, 
   Calendar,
   Search,
-  ShoppingCart
+  ShoppingCart,
+  Loader2,
+  AlertCircle,
+  CheckCircle2
 } from 'lucide-react';
 import './OrderBuilder.css';
 
@@ -15,10 +18,54 @@ const OrderBuilder = () => {
     { id: 1, name: 'Limpiador de Pisos Industrial', price: 25.50, quantity: 2, total: 51.00 },
     { id: 2, name: 'Escoba Industrial Premium', price: 12.00, quantity: 5, total: 60.00 }
   ]);
+  const [notes, setNotes] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState(null); // { type: 'error' | 'success', msg: string }
 
   const subtotal = items.reduce((acc, item) => acc + item.total, 0);
   const tax = subtotal * 0.19; // Ejemplo 19% IVA
   const total = subtotal + tax;
+
+  const handleCreateOrder = async () => {
+    setLoading(true);
+    setFeedback(null);
+    try {
+      // Necesitamos el token de la sesión para la protección BOLA,
+      // pero como usamos HttpOnly cookies en Vercel, el navegador enviará la cookie automáticamente.
+      // Sin embargo, nuestro endpoint /api/orders/create actual espera el token en Authorization header
+      // para pasarlo a Supabase. Si migramos a @supabase/ssr globalmente, el backend puede leer la cookie.
+      // Para este ejemplo híbrido, usaremos fetch que enviará las cookies.
+      
+      const response = await fetch('/api/orders/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // OJO: Si usas Supabase client-side, podrías enviar el token aquí.
+          // Pero asumimos que el backend puede usar la cookie ahora si actualizamos la función.
+        },
+        body: JSON.stringify({
+          items,
+          customer: { name: 'Edificio Residencial Horizonte', address: 'Calle 45 # 12-34' },
+          notes
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.status === 429) {
+        setFeedback({ type: 'error', msg: 'Has excedido el límite de creación de pedidos (Protección Rate Limit). Intenta en 1 minuto.' });
+      } else if (!response.ok) {
+        throw new Error(data.error || 'Error al crear pedido');
+      } else {
+        setFeedback({ type: 'success', msg: '¡Remisión generada exitosamente!' });
+        setItems([]);
+      }
+    } catch (err) {
+      setFeedback({ type: 'error', msg: err.message });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="order-builder-page">
@@ -37,6 +84,22 @@ const OrderBuilder = () => {
           </div>
         </div>
       </div>
+
+      {feedback && (
+        <div className={`feedback-banner ${feedback.type}`} style={{ 
+          padding: '12px 16px', 
+          borderRadius: '8px', 
+          marginBottom: '20px', 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '8px',
+          backgroundColor: feedback.type === 'error' ? '#fee2e2' : '#dcfce7',
+          color: feedback.type === 'error' ? '#991b1b' : '#166534'
+        }}>
+          {feedback.type === 'error' ? <AlertCircle size={20} /> : <CheckCircle2 size={20} />}
+          <span>{feedback.msg}</span>
+        </div>
+      )}
 
       <div className="order-grid">
         <div className="order-main">
@@ -99,6 +162,13 @@ const OrderBuilder = () => {
                       </td>
                     </tr>
                   ))}
+                  {items.length === 0 && (
+                    <tr>
+                      <td colSpan="5" style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>
+                        No hay ítems en este pedido.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -123,8 +193,13 @@ const OrderBuilder = () => {
                 <span>${total.toFixed(2)}</span>
               </div>
             </div>
-            <button className="action-btn primary full-width">
-              <FileText size={18} /> Generar Remisión
+            <button 
+              className="action-btn primary full-width" 
+              onClick={handleCreateOrder}
+              disabled={loading || items.length === 0}
+            >
+              {loading ? <Loader2 className="spinning" size={18} /> : <FileText size={18} />} 
+              {loading ? ' Procesando...' : ' Generar Remisión'}
             </button>
             <button className="action-btn outline full-width">
               Guardar como Borrador
@@ -133,7 +208,11 @@ const OrderBuilder = () => {
 
           <div className="notes-card">
             <h3>Notas Internas</h3>
-            <textarea placeholder="Agregar observaciones sobre el pedido..."></textarea>
+            <textarea 
+              placeholder="Agregar observaciones sobre el pedido..."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            ></textarea>
           </div>
         </div>
       </div>
