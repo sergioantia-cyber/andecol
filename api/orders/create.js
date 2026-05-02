@@ -3,18 +3,7 @@ import { Redis } from "@upstash/redis";
 import { createServerClient } from "@supabase/ssr";
 import { serialize } from "cookie";
 
-// Inicializar Redis para Upstash
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL || '',
-  token: process.env.UPSTASH_REDIS_REST_TOKEN || '',
-});
-
-// Limitar a 5 peticiones por minuto por IP/Usuario
-const ratelimit = new Ratelimit({
-  redis: redis,
-  limiter: Ratelimit.slidingWindow(5, "1 m"),
-  analytics: true,
-});
+// El Rate Limit se inicializará de forma segura dentro del handler
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -24,19 +13,38 @@ export default async function handler(req, res) {
   // Identificador para el Rate Limit (puede ser la IP o el ID del usuario)
   const identifier = req.headers['x-forwarded-for'] || 'anonymous';
   
-  // Validar Rate Limit
-  const { success, limit, remaining, reset } = await ratelimit.limit(identifier);
-  
-  res.setHeader('X-RateLimit-Limit', limit);
-  res.setHeader('X-RateLimit-Remaining', remaining);
-  res.setHeader('X-RateLimit-Reset', reset);
+  // Validar Rate Limit (Opcional, por si aún no configuras Upstash)
+  if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+    try {
+      const redis = new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      });
 
-  if (!success) {
-    console.warn(`Rate limit excedido para IP: ${identifier}`);
-    return res.status(429).json({ 
-      error: 'Too Many Requests',
-      message: 'Has excedido el límite de creación de pedidos. Intenta nuevamente en un minuto.'
-    });
+      const ratelimit = new Ratelimit({
+        redis: redis,
+        limiter: Ratelimit.slidingWindow(5, "1 m"),
+        analytics: true,
+      });
+
+      const { success, limit, remaining, reset } = await ratelimit.limit(identifier);
+      
+      res.setHeader('X-RateLimit-Limit', limit);
+      res.setHeader('X-RateLimit-Remaining', remaining);
+      res.setHeader('X-RateLimit-Reset', reset);
+
+      if (!success) {
+        console.warn(`Rate limit excedido para IP: ${identifier}`);
+        return res.status(429).json({ 
+          error: 'Too Many Requests',
+          message: 'Has excedido el límite de creación de pedidos. Intenta nuevamente en un minuto.'
+        });
+      }
+    } catch (redisError) {
+      console.error('Error al conectar con Upstash Redis (Rate Limit saltado):', redisError.message);
+    }
+  } else {
+    console.warn('Upstash no está configurado. Rate limiting desactivado.');
   }
 
   // BOLA Protection: Leer la sesión de forma segura desde las Cookies HttpOnly
