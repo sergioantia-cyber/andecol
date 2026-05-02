@@ -8,38 +8,50 @@ export default async function handler(req, res) {
 
   const { email, password } = req.body;
 
-  const supabaseUrl = process.env.VITE_SUPABASE_URL;
-  const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
+  try {
+    const supabaseUrl = process.env.VITE_SUPABASE_URL;
+    const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
 
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      getAll() {
-        return Object.keys(req.cookies || {}).map((name) => ({ name, value: req.cookies[name] }));
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error('Supabase URL or Anon Key is missing in environment variables');
+    }
+
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        getAll() {
+          return Object.keys(req.cookies || {}).map((name) => ({ name, value: req.cookies[name] }));
+        },
+        setAll(cookiesToSet) {
+          try {
+            const serializedCookies = cookiesToSet.map(({ name, value, options }) => {
+              return serialize(name, value, {
+                ...options,
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                path: '/',
+              });
+            });
+            res.setHeader('Set-Cookie', serializedCookies);
+          } catch (cookieError) {
+            console.error('Error setting cookies', cookieError);
+          }
+        },
       },
-      setAll(cookiesToSet) {
-        // En Vercel Serverless (Express-like), configurar cookies vía Set-Cookie headers
-        const serializedCookies = cookiesToSet.map(({ name, value, options }) => {
-          return serialize(name, value, {
-            ...options,
-            httpOnly: true, // ¡VITAL! Protección contra XSS
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/',
-          });
-        });
-        res.setHeader('Set-Cookie', serializedCookies);
-      },
-    },
-  });
+    });
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-  if (error) {
-    return res.status(401).json({ error: error.message });
+    if (error) {
+      return res.status(401).json({ error: error.message });
+    }
+
+    return res.status(200).json({ success: true, user: data.user });
+  } catch (err) {
+    console.error('Login error:', err);
+    return res.status(500).json({ error: err.message || 'Internal Server Error during login' });
   }
-
-  return res.status(200).json({ success: true, user: data.user });
 }
