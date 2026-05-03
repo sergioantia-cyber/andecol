@@ -15,8 +15,8 @@
   --primary-900: #00AEEF; /* Usamos el Cyan vibrante para encabezados principales */
   
   --secondary: #00D1FF; 
-  --bg-main: #003366; 
-  --bg-gradient: linear-gradient(135deg, #003366 0%, #001830 100%);
+  --bg-main: #21B6F8; 
+  --bg-gradient: linear-gradient(135deg, #21B6F8 0%, #009BD6 100%);
   --bg-card: #00344B; /* Fondo para ventanas, menús y tarjetas */
   --white: #FFFFFF;
   --text-main: #FFFFFF;
