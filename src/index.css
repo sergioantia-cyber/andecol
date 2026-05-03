@@ -4,20 +4,20 @@
   /* Colors - Premium Dark Blue Theme */
   --primary: #00AEEF; 
   --primary-50: #001f33;
-  --primary-100: #00344B;
+  --primary-100: #003061;
   --primary-200: #004b6b;
   --primary-300: #006a99;
   --primary-400: #008ccc;
   --primary-500: #00AEEF;
   --primary-600: #008fc4;
   --primary-700: #006f99;
-  --primary-800: #00344B; 
+  --primary-800: #003061; 
   --primary-900: #00AEEF; /* Usamos el Cyan vibrante para encabezados principales */
   
   --secondary: #00D1FF; 
   --bg-main: #21B6F8; 
   --bg-gradient: linear-gradient(135deg, #21B6F8 0%, #009BD6 100%);
-  --bg-card: #00344B; /* Fondo para ventanas, menús y tarjetas */
+  --bg-card: #003061; /* Fondo para ventanas, menús y tarjetas */
   --white: #FFFFFF;
   --text-main: #FFFFFF;
   --text-muted: #A0C4E0;
