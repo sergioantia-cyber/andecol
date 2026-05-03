@@ -21,7 +21,7 @@
   gap: 0.5rem;
   background: var(--bg-card);
   padding: 0.5rem 1rem;
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   font-size: 0.85rem;
   color: var(--text-secondary);
   border: 1px solid var(--border-color);
@@ -59,7 +59,7 @@
 
 .client-selector-card, .items-card, .summary-card, .notes-card {
   background: var(--bg-card);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: var(--shadow-sm);
   margin-bottom: 1.5rem;

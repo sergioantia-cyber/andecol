@@ -2,7 +2,7 @@
   background-color: #19324D;
   min-height: 100vh;
   box-shadow: 0 0 20px rgba(0,0,0,0.15);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px 100px 20px; /* Added side padding and space for bottom nav */
@@ -309,7 +309,7 @@
   margin-bottom: 30px;
   padding: 20px;
   background: var(--primary-50);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
 }
@@ -455,7 +455,7 @@
   padding: 80px 20px;
   text-align: center;
   background: var(--bg-card);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   border: 1px dashed var(--border);
   color: var(--text-muted);
 }

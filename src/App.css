@@ -287,7 +287,7 @@
   
   .content-card.dashboard-chart-card.trading-style {
     padding: 10px;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
   }
   
   .chart-info-mini {
@@ -357,7 +357,7 @@
 .wf-icon {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
