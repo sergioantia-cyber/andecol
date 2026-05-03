@@ -1,42 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Colors - Premium Dark Blue Theme */
-  --primary: #00AEEF; 
-  --primary-50: #001f33;
-  --primary-100: #003061;
-  --primary-200: #004b6b;
-  --primary-300: #006a99;
-  --primary-400: #008ccc;
-  --primary-500: #00AEEF;
-  --primary-600: #008fc4;
-  --primary-700: #006f99;
-  --primary-800: #003061; 
-  --primary-900: #00AEEF;
-  
-  --secondary: #00D1FF; 
-  --bg-main: #21B6F8; 
-  --bg-gradient: linear-gradient(135deg, #21B6F8 0%, #009BD6 100%);
-  --bg-card: #003061; /* Fondo para ventanas, menús y tarjetas */
-  --white: #FFFFFF;
-  --text-main: #FFFFFF;
-  --text-muted: #A0C4E0;
-  --border: #004B6B;
-  --success: #10B981;
-  --warning: #F59E0B;
-  --danger: #EF4444;
+  /* ── Enterprise Obsidian Palette ── */
+  --primary:        #0EA5E9;
+  --primary-glow:   rgba(14, 165, 233, 0.30);
+  --primary-50:     rgba(14, 165, 233, 0.10);
+  --primary-100:    rgba(14, 165, 233, 0.20);
+  --primary-200:    rgba(14, 165, 233, 0.35);
+  --primary-400:    #38bdf8;
+  --secondary:      #38bdf8;
 
-  /* Spacing */
-  --radius-sm: 12px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --radius-xl: 32px;
-  
+  --bg-main:        #0b1326;   /* Fondo principal — azul noche */
+  --bg-card:        #131b2e;   /* Tarjetas / contenedores */
+  --bg-elevated:    #1a2540;   /* Hover / elementos elevados */
+
+  --white:          #FFFFFF;
+  --text-main:      #FFFFFF;
+  --text-muted:     #94A3B8;
+
+  --border:         rgba(14, 165, 233, 0.12);
+  --border-subtle:  rgba(255, 255, 255, 0.06);
+
+  --success:  #10B981;
+  --warning:  #F59E0B;
+  --danger:   #EF4444;
+
+  /* Shape */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
   /* Shadows */
-  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  --shadow-md: 0 8px 15px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.1);
-  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.15);
-  --shadow-glow: 0 0 20px rgba(0, 174, 239, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  --shadow-sm:   0 2px 8px  rgba(0, 0, 0, 0.40);
+  --shadow-md:   0 8px 24px rgba(0, 0, 0, 0.50);
+  --shadow-lg:   0 16px 40px rgba(0, 0, 0, 0.60);
+  --shadow-glow: 0 0 20px rgba(14, 165, 233, 0.35);
 }
 
 * {
@@ -46,9 +45,8 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
-  background: var(--bg-gradient); /* Applied blue gradient */
-  background-attachment: fixed;
+  font-family: 'Manrope', sans-serif;
+  background-color: var(--bg-main);
   color: var(--text-main);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;

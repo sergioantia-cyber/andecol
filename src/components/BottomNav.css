@@ -38,6 +38,7 @@
 .nav-btn.active {
   color: var(--primary);
   background: var(--primary-50);
+  box-shadow: 0 0 12px var(--primary-glow);
 }
 
 .nav-label {

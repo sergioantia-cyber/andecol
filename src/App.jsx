@@ -56,19 +56,25 @@ function App() {
   const PULL_THRESHOLD = 70;
 
   useEffect(() => {
-    // Verificar la sesión consultando el endpoint que lee la cookie HttpOnly
+    // Verificar la sesión directamente con el cliente Supabase (compatible con local y Vercel)
     const checkSession = async () => {
       try {
-        const res = await fetch('/api/auth/user');
-        const data = await res.json();
-        setSession(data.user ? { user: data.user } : null);
+        const { data: { session } } = await supabase.auth.getSession();
+        setSession(session ? { user: session.user } : null);
       } catch (err) {
         console.error('Error fetching session', err);
         setSession(null);
       }
     };
-    
+
     checkSession();
+
+    // Escuchar cambios de sesión en tiempo real
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session ? { user: session.user } : null);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const sheetId = localStorage.getItem('andecol_sheet_id') || '1VpPu3RV4owV8GeFeultha-93ldNrSJEq';
@@ -252,7 +258,7 @@ function App() {
     switch (activeTab) {
       case 'dashboard':
         return (
-          <>
+          <div className="dashboard-page">
             <div className="dashboard-header">
               <h1 className="welcome-text">Andecol - Dashboard Real</h1>
               <p className="subtitle">Resumen operativo basado en tu inventario actual.</p>
@@ -334,7 +340,7 @@ function App() {
                 </div>
               </div>
             </div>
-          </>
+          </div>
         );
       case 'catalog':
         return <Catalog />;

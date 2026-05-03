@@ -23,10 +23,9 @@
 .welcome-text {
   font-size: 2.25rem;
   font-weight: 800;
-  color: #1e293b;
   letter-spacing: -0.025em;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  background: linear-gradient(135deg, #FFFFFF 0%, var(--primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -57,9 +56,9 @@
 }
 
 .content-card.dashboard-chart-card.trading-style {
-  background: #020617;
+  background: var(--bg-card);
   color: var(--text-main);
-  border: 1px solid #1e293b;
+  border: 1px solid var(--border);
   padding: 30px;
   display: flex;
   flex-direction: column;
@@ -147,8 +146,8 @@
   align-items: center;
   gap: 10px;
   padding: 8px 16px;
-  background-color: rgba(30, 41, 59, 0.4);
-  border: 1px solid #1e293b;
+  background-color: var(--primary-50);
+  border: 1px solid var(--border);
   border-radius: 50px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -156,10 +155,10 @@
 }
 
 .legend-frame-trading:hover {
-  background-color: rgba(30, 41, 59, 0.8);
-  border-color: #334155;
+  background-color: var(--primary-100);
+  border-color: var(--primary);
   transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.4), 0 0 12px var(--primary-glow);
 }
 
 .legend-frame-trading .dot {
@@ -182,16 +181,16 @@
   align-items: center;
   gap: 0.75rem;
   box-shadow: var(--shadow-sm);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--border);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 }
 
 .stat-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--primary-100);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg), 0 0 20px var(--primary-glow);
+  border-color: var(--primary);
 }
 
 .stat-card::before {
@@ -345,9 +344,9 @@
   gap: 1rem;
   padding: 1.25rem;
   border-radius: var(--radius-md);
-  background: var(--bg-main);
+  background: var(--bg-elevated, #1a2540);
   border: 1px solid var(--border);
-  transition: transform 0.2s;
+  transition: all 0.2s;
 }
 
 .workflow-item:hover {
@@ -365,13 +364,13 @@
 }
 
 .wf-icon.pending {
-  background: #fffbeb;
+  background: rgba(245, 158, 11, 0.15);
   color: #f59e0b;
 }
 
 .wf-icon.completed {
-  background: #f0fdf4;
-  color: #10b981;
+  background: rgba(14, 165, 233, 0.15);
+  color: var(--primary);
 }
 
 .wf-text p {

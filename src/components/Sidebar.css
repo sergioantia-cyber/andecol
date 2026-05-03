@@ -29,7 +29,7 @@
   top: 16px;
   left: 16px;
   z-index: 300;
-  background: var(--white);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 50%;
   width: 36px;
@@ -39,7 +39,7 @@
   justify-content: center;
   cursor: pointer;
   color: var(--text-muted);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
 }
 
@@ -55,7 +55,7 @@
   border-radius: var(--radius-sm);
   box-shadow: none;
   border: none;
-  background: var(--bg-main);
+  background: var(--bg-elevated, #1a2540);
   width: 32px;
   height: 32px;
 }
@@ -134,5 +134,5 @@
 
 .logout:hover {
   color: var(--danger);
-  background-color: #fee2e2;
+  background-color: rgba(239, 68, 68, 0.12);
 }
