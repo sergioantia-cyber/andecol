@@ -78,13 +78,36 @@ function App() {
   }, []);
 
   const sheetId = localStorage.getItem('andecol_sheet_id') || '1VpPu3RV4owV8GeFeultha-93ldNrSJEq';
-  const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
 
-  const fetchData = () => {
+  const fetchData = async () => {
     setLoading(true);
-    const saved = localStorage.getItem('andecol_completed_profiles');
-    const profiles = saved ? JSON.parse(saved) : {};
-    setCompletedProfiles(profiles);
+
+    // Cargar perfiles completados desde Supabase (misma fuente que el Catálogo)
+    try {
+      const { data, error } = await supabase
+        .from('product_profiles')
+        .select('sku');
+
+      if (!error && data) {
+        const profilesMap = {};
+        data.forEach(profile => {
+          profilesMap[profile.sku] = { completed: true };
+        });
+        setCompletedProfiles(profilesMap);
+      } else {
+        // Fallback a localStorage si falla Supabase
+        const saved = localStorage.getItem('andecol_completed_profiles');
+        setCompletedProfiles(saved ? JSON.parse(saved) : {});
+      }
+    } catch {
+      const saved = localStorage.getItem('andecol_completed_profiles');
+      setCompletedProfiles(saved ? JSON.parse(saved) : {});
+    }
+
+    const isDev = import.meta.env.DEV;
+    const sheetUrl = isDev
+      ? `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`
+      : `/api/sheets/inventory?sheetId=${sheetId}`;
 
     Papa.parse(sheetUrl, {
       download: true,
@@ -98,7 +121,7 @@ function App() {
               const cleanStock = rawStock.toString().replace(/\./g, '').replace(/,/g, '.').replace(/[^\d.]/g, '');
               const numericStock = parseFloat(cleanStock) || 0;
               return {
-                sku: row['ID SKU'] || 'N/A',
+                sku: (row['ID SKU'] || 'N/A').trim(),
                 name: row['Descripción del Producto'] || 'Sin nombre',
                 category: row['Categoría'] || 'General',
                 stock: numericStock,
@@ -116,6 +139,7 @@ function App() {
   useEffect(() => {
     fetchData();
   }, []);
+
 
   const totalStock = inventoryData.reduce((acc, item) => {
     const profile = completedProfiles[item.sku];
