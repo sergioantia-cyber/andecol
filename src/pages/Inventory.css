@@ -285,7 +285,7 @@
 }
 
 .metric-value.price {
-  color: var(--primary-800);
+  color: var(--text-muted);
 }
 
 .metric-value.stock.low {
@@ -376,7 +376,7 @@
 
 .complete-profile-btn {
   background: var(--primary-50);
-  color: var(--primary-800);
+  color: var(--text-muted);
   border: 1px dashed var(--primary-300);
 }
 

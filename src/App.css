@@ -39,7 +39,7 @@
 
 .subtitle {
   font-size: 1.1rem;
-  color: var(--primary-800);
+  color: var(--text-muted);
 }
 
 .stats-grid {

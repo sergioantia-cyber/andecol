@@ -312,7 +312,7 @@
 
 .detail-price-label {
   font-size: 0.85rem;
-  color: var(--primary-800);
+  color: var(--text-muted);
   font-weight: 600;
   margin-bottom: 4px;
 }
