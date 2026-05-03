@@ -1,5 +1,12 @@
 .order-builder-page {
-  padding-bottom: 80px;
+  background-color: #19324D;
+  min-height: 100vh;
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255,255,255,0.05);
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 40px 40px 100px 40px;
   animation: fadeIn 0.4s ease-out;
 }
 

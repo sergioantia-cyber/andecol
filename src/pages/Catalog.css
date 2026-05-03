@@ -1,11 +1,12 @@
 .catalog-page {
   background-color: #19324D;
   min-height: 100vh;
-  box-shadow: 0 0 20px rgba(0,0,0,0.15);
-  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255,255,255,0.05);
   max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px 100px 20px; /* Added side padding and space for bottom nav */
+  margin: 24px auto;
+  padding: 40px 40px 100px 40px;
 }
 
 .catalog-header {
