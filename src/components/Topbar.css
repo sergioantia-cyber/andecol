@@ -1,11 +1,11 @@
 .topbar {
-  height: 80px;
-  background-color: var(--white);
+  height: 70px;
+  background-color: var(--bg-card);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
+  padding: 0 24px;
   position: sticky;
   top: 0;
   z-index: 90;

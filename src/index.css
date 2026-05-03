@@ -1,26 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Colors - Premium Blue Theme */
-  --primary: #0066FF; 
-  --primary-50: #EEF5FF;
-  --primary-100: #D9E9FF;
-  --primary-200: #B3D2FF;
-  --primary-300: #8CBBFF;
-  --primary-400: #66A4FF;
-  --primary-500: #0066FF;
-  --primary-600: #0052CC;
-  --primary-700: #003D99;
-  --primary-800: #002966;
-  --primary-900: #001433;
+  /* Colors - Premium Dark Blue Theme */
+  --primary: #00AEEF; 
+  --primary-50: #001f33;
+  --primary-100: #00344B;
+  --primary-200: #004b6b;
+  --primary-300: #006a99;
+  --primary-400: #008ccc;
+  --primary-500: #00AEEF;
+  --primary-600: #008fc4;
+  --primary-700: #006f99;
+  --primary-800: #00344B; 
+  --primary-900: #00AEEF; /* Usamos el Cyan vibrante para encabezados principales */
   
   --secondary: #00D1FF; 
-  --bg-main: #E8F0FE; /* Soft blue background */
-  --bg-gradient: linear-gradient(135deg, #E8F0FE 0%, #DCE8FF 100%);
+  --bg-main: #003366; 
+  --bg-gradient: linear-gradient(135deg, #003366 0%, #001830 100%);
+  --bg-card: #00344B; /* Fondo para ventanas, menús y tarjetas */
   --white: #FFFFFF;
-  --text-main: #0F172A;
-  --text-muted: #475569;
-  --border: #D1D9E6;
+  --text-main: #FFFFFF;
+  --text-muted: #A0C4E0;
+  --border: #004B6B;
   --success: #10B981;
   --warning: #F59E0B;
   --danger: #EF4444;

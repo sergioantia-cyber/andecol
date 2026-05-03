@@ -37,12 +37,12 @@
 
 .action-btn.primary {
   background: var(--primary-900);
-  color: white;
+  color: var(--text-main);
   border: none;
 }
 
 .action-btn.secondary {
-  background: white;
+  background: var(--bg-card);
   color: var(--primary-900);
   border: 1px solid var(--border);
 }
@@ -53,13 +53,13 @@
 }
 
 .action-btn.outline {
-  background: white;
+  background: var(--bg-card);
   border: 1px solid var(--border);
   color: var(--text-muted);
 }
 
 .search-filter-card {
-  background: white;
+  background: var(--bg-card);
   padding: 20px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
@@ -100,10 +100,11 @@
 
 .category-list {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
   overflow-x: auto;
   padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .category-list::-webkit-scrollbar {
@@ -114,7 +115,7 @@
   padding: 8px 16px;
   border-radius: 20px;
   border: 1px solid var(--border);
-  background: white;
+  background: var(--bg-card);
   color: var(--text-muted);
   font-size: 0.8125rem;
   font-weight: 600;
@@ -125,7 +126,7 @@
 
 .category-pill.active {
   background: var(--primary-900);
-  color: white;
+  color: var(--text-main);
   border-color: var(--primary-900);
 }
 
@@ -138,7 +139,7 @@
 }
 
 .product-card {
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
   border: 1px solid var(--border);
   padding: 20px;
@@ -299,7 +300,7 @@
   padding: 60px 20px;
   text-align: center;
   color: var(--text-muted);
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
   border: 1px dashed var(--border);
 }
@@ -348,7 +349,7 @@
 
 .tab-btn .badge {
   background: var(--text-muted);
-  color: white;
+  color: var(--text-main);
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 0.75rem;
@@ -385,7 +386,7 @@
 }
 
 .edit-profile-btn {
-  background: white;
+  background: var(--bg-card);
   color: var(--text-main);
   border: 1px solid var(--border);
 }
@@ -413,7 +414,7 @@
 }
 
 .modal-card {
-  background: white;
+  background: var(--bg-card);
   width: 100%;
   max-width: 450px;
   max-height: 90vh;
@@ -501,7 +502,7 @@
 .photo-placeholder {
   width: 80px;
   height: 80px;
-  background: white;
+  background: var(--bg-card);
   border-radius: 12px;
   display: flex;
   justify-content: center;
@@ -524,7 +525,7 @@
 .photo-btn {
   display: inline-block;
   background: var(--primary-900);
-  color: white;
+  color: var(--text-main);
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 0.875rem;
@@ -580,7 +581,7 @@
 .save-btn {
   background: var(--primary-900);
   border: none;
-  color: white;
+  color: var(--text-main);
 }
 
 .save-btn:hover {
